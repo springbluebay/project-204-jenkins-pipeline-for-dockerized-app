@@ -1,12 +1,22 @@
 pipeline{
     agent { label "master" }
     environment {
-        ECR_REGISTRY = ""
+        ECR_REGISTRY = "827784331229.dkr.ecr.us-east-1.amazonaws.com"
+        APP_REPO_NAME = "spring-repo/phonebook-app"
+        APP_NAME = "phonebook"
+        AWS_REGION = "us-east-1"
     }
     stages {
         stage('Create ECR Repo') {
             steps {
             echo 'Creating ECR Repository'
+            sh """
+            aws ecr create-repository \
+              --repository-name ${APP_REPO_NAME} \
+              --image-scanning-configuration scanOnPush=false \
+              --image-tag-mutability MUTABLE \
+              --region ${AWS_REGION}
+            """
             }
         }
         stage('Build App Docker Images'){
